@@ -7,7 +7,6 @@ using BmojiApp.Logics.Constants;
 using BmojiApp.Logics.Models;
 using Foundation;
 using Newtonsoft.Json;
-using UIKit;
 using Xamarin.Essentials;
 using AppInfo = BmojiApp.Logics.Utility.AppInfo;
 
@@ -39,7 +38,7 @@ namespace BmojiApp.iOS.Services.WhatsApp
                 for (int i = 0; i < stickerPack.Stickers.Count; i++)
                 {
                     string imagePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), stickerPack.Stickers[i].ImageFile);
-                    byte[] imageData = File.ReadAllBytes(imagePath);
+                    byte[] imageData = Interoperability.PngToWebp(File.ReadAllBytes(imagePath));
                     var keys = new[]
                     {
                         new NSString("image_data"),

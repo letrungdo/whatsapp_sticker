@@ -1,5 +1,4 @@
 using System.IO;
-using System.Threading.Tasks;
 using CoreFoundation;
 using Foundation;
 using SkiaSharp;
@@ -19,41 +18,36 @@ namespace BmojiApp.iOS.Services.WhatsApp
             return UIApplication.SharedApplication.CanOpenUrl(new NSUrl("whatsapp://"));
         }
 
-        public static async void Send(NSDictionary<NSString, NSObject> dataToSend)
+        public static bool Send(NSDictionary<NSString, NSObject> dataToSend)
         {
-            //if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
-            //{
-            //    UIPasteboard.General.SetItems(new NSDictionary<NSString, NSObject>[] { dataToSend }, new UIPasteboardOptions
-            //    {
-            //        LocalOnly = true,
-            //        ExpirationDate = NSDate.FromTimeIntervalSinceNow(PASTEBOARD_EXPIRATION_SECONDS)
-            //    });
-            //}
-            //else
-            //{
-            UIPasteboard.General.SetData(NSKeyedArchiver.ArchivedDataWithRootObject(dataToSend, false, out _), PASTEBOARD_STICKER_PACK_DATA_TYPE);
-            //}
+            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+            {
+                UIPasteboard.General.SetItems(new NSDictionary<NSString, NSObject>[] { dataToSend }, new UIPasteboardOptions
+                {
+                    LocalOnly = true,
+                    ExpirationDate = NSDate.FromTimeIntervalSinceNow(PASTEBOARD_EXPIRATION_SECONDS)
+                });
+            }
+            else
+            {
+                UIPasteboard.General.SetData(NSKeyedArchiver.ArchivedDataWithRootObject(dataToSend), PASTEBOARD_STICKER_PACK_DATA_TYPE);
+            }
 
-            //DispatchQueue.MainQueue.DispatchAsync(() =>
-            //{
-            //if (CanSend())
-            //{
-            //    if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
-            //    {
-            //        UIApplication.SharedApplication.OpenUrl(new NSUrl(WHATSAPP_URL), new NSDictionary(), null);
-            //    }
-            //    else
-            //    {
-            //        UIApplication.SharedApplication.OpenUrl(new NSUrl(WHATSAPP_URL));
-            //    }
-            //}
-            //});
-
-            await Task.Delay(1000);
-
-            UIApplication.SharedApplication.OpenUrl(new NSUrl(WHATSAPP_URL));
-
-            //return true;
+            DispatchQueue.MainQueue.DispatchAsync(() =>
+            {
+                if (CanSend())
+                {
+                    if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+                    {
+                        UIApplication.SharedApplication.OpenUrl(new NSUrl(WHATSAPP_URL), new NSDictionary(), null);
+                    }
+                    else
+                    {
+                        UIApplication.SharedApplication.OpenUrl(new NSUrl(WHATSAPP_URL));
+                    }
+                }
+            });
+            return true;
         }
 
         static void CopyImageToPasteboard(UIImage image)
